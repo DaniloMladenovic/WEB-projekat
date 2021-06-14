@@ -1,0 +1,30 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.groupFormDiv {
+  flex-grow: 1;
+  background-color: #caab7d;
+  font-size: 1.5rem;
+}
+
+.groupNameDiv,
+.groupSizeDiv,
+.groupTypeDiv {
+  display: flex;
+  justify-content: space-between;
+}
+
+.groupFormDiv input {
+  width: 5.5rem;
+}
+
+.groupFormDiv select {
+  width: 6rem;
+}
+
+.groupsDiv {
+  flex-grow: 3;
+  background-color: #634533;
+}
