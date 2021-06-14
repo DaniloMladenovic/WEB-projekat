@@ -7,13 +7,16 @@
   flex-grow: 1;
   background-color: #caab7d;
   font-size: 1.5rem;
+  text-align: center;
 }
 
 .groupNameDiv,
 .groupSizeDiv,
-.groupTypeDiv {
+.groupTypeDiv,
+.locationsDiv {
   display: flex;
   justify-content: space-between;
+  margin: 0.5em;
 }
 
 .groupFormDiv input {
@@ -27,4 +30,10 @@
 .groupsDiv {
   flex-grow: 3;
   background-color: #634533;
+}
+
+.opp {
+  height: 2rem;
+  width: 2rem;
+  background-color: #d0bb44;
 }
