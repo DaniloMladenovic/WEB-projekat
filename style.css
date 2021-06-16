@@ -3,37 +3,64 @@
   flex-wrap: wrap;
 }
 
-.groupFormDiv {
+.formContainer {
   flex-grow: 1;
+  max-width: 19rem;
+  height: max-content;
   background-color: #caab7d;
   font-size: 1.5rem;
   text-align: center;
+  padding-bottom: 1rem;
 }
 
-.groupNameDiv,
-.groupSizeDiv,
-.groupTypeDiv,
-.locationsDiv {
+.someDiv {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin: 0.5em;
 }
 
-.groupFormDiv input {
-  width: 5.5rem;
+.groupFormDiv input,
+.heroFormDiv input {
+  width: 6.5rem;
+  height: 1.5rem;
 }
 
-.groupFormDiv select {
-  width: 6rem;
+.groupFormDiv select,
+.heroFormDiv select {
+  width: 7rem;
+  height: 1.5rem;
 }
 
 .groupsDiv {
-  flex-grow: 3;
+  display: flex;
+  flex-wrap: wrap;
+  flex-basis: 24rem;
   background-color: #634533;
+  flex-grow: 4;
 }
 
-.opp {
-  height: 2rem;
-  width: 2rem;
+.newGroupDiv {
+  flex: 1 0 30%;
+  margin: 0.2rem;
   background-color: #d0bb44;
+  text-align: center;
+}
+
+.heroesDiv {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  text-align: center;
+}
+
+.heroDiv {
+  flex: 1 0 25%;
+  margin: 0.5rem;
+}
+
+h3,
+p {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
