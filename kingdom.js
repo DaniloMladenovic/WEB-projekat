@@ -132,25 +132,114 @@ export class Kingdom {
       locationsSelect.appendChild(opt);
     });
 
+    let buttonsDiv = document.createElement("div");
+    buttonsDiv.className = "someDiv";
+    groupFormDiv.appendChild(buttonsDiv);
+
     // DODAJ GRUPU DUGME
     let addGroupButton = document.createElement("button");
-    addGroupButton.innerHTML = "Add group";
-    groupFormDiv.appendChild(addGroupButton);
+    addGroupButton.innerHTML = "Add";
+    buttonsDiv.appendChild(addGroupButton);
     addGroupButton.onclick = () => {
       let groupName = this.container.querySelector(".groupName").value;
       let groupSize = parseInt(
         this.container.querySelector(".groupSize").value
       );
-
       let groupType = groupTypeSelect.value;
       let location = parseInt(locationsSelect.value);
 
-      this.groups[location].ChangeGroup(
-        groupName,
-        groupSize,
-        groupType,
-        this.locations[location]
+      if (groupName === "") {
+        alert("Please insert group name.");
+      } else if (Number.isNaN(groupSize)) {
+        alert("Please insert group size.");
+      } else if (groupSize > 9) {
+        alert("Maximum group size is 9.");
+      } else if (groupType === "") {
+        alert("Please pick group type.");
+      } else if (locationsSelect.value === "") {
+        alert("Please pick a location.");
+      } else {
+        this.groups[location].ChangeGroup(
+          groupName,
+          groupSize,
+          groupType,
+          this.locations[location]
+        );
+      }
+    };
+
+    // IZMENI GRUPU DUGME
+    let updateGroupButton = document.createElement("button");
+    updateGroupButton.innerHTML = "Update";
+    buttonsDiv.appendChild(updateGroupButton);
+    updateGroupButton.onclick = () => {
+      let groupName = this.container.querySelector(".groupName").value;
+      let groupSize = parseInt(
+        this.container.querySelector(".groupSize").value
       );
+      let groupType = groupTypeSelect.value;
+      let location = parseInt(locationsSelect.value);
+
+      if (groupName === "") {
+        alert("Please insert group name.");
+      } else if (Number.isNaN(groupSize)) {
+        alert("Please insert group size.");
+      } else if (groupSize > 9) {
+        alert("Maximum group size is 9.");
+      } else if (groupType === "") {
+        alert("Please pick group type.");
+      } else if (locationsSelect.value === "") {
+        alert("Please pick a location.");
+      } else {
+        let locationElement = this.container.querySelector(
+          `.${this.locations[location]}`
+        );
+
+        let removeElement =
+          locationElement.parentElement.querySelector(".heroesDiv");
+
+        if (removeElement != null) {
+          locationElement.parentElement.removeChild(
+            locationElement.parentElement.querySelector(".heroesDiv")
+          );
+
+          this.groups[location].ChangeGroup(
+            groupName,
+            groupSize,
+            groupType,
+            this.locations[location]
+          );
+        }
+      }
+    };
+
+    // IZBRISI GRUPU DUGME
+    let deleteGroupButton = document.createElement("button");
+    deleteGroupButton.innerHTML = "Delete";
+    buttonsDiv.appendChild(deleteGroupButton);
+    deleteGroupButton.onclick = () => {
+      let location = parseInt(locationsSelect.value);
+
+      if (locationsSelect.value === "") {
+        alert("dude pls be normal");
+      } else {
+        let locationElement = this.container.querySelector(
+          `.${this.locations[location]}`
+        );
+
+        let removeElement =
+          locationElement.parentElement.querySelector(".heroesDiv");
+
+        if (removeElement != null) {
+          this.container.querySelector(
+            `.${this.locations[location]}`
+          ).innerHTML = "Group name (Type)";
+
+          locationElement.parentElement.removeChild(
+            locationElement.parentElement.querySelector(".heroesDiv")
+          );
+        }
+      }
     };
   }
 
@@ -163,7 +252,7 @@ export class Kingdom {
     HeroLabel.innerHTML = "Hero creation";
     heroFormDiv.appendChild(HeroLabel);
 
-    // GROUP NAME //
+    // HERO NAME //
     let heroNameDiv = document.createElement("div");
     heroNameDiv.className = "someDiv";
     heroFormDiv.appendChild(heroNameDiv);
@@ -176,7 +265,7 @@ export class Kingdom {
     heroNameInput.className = "heroName";
     heroNameDiv.appendChild(heroNameInput);
 
-    // GROUP TYPE SELECT
+    // CLASS SELECT
     let heroClasses = ["Warrior", "Paladin", "Priest", "Ranger", "Mage"];
 
     let heroClassDiv = document.createElement("div");
@@ -187,24 +276,51 @@ export class Kingdom {
     heroClassLabel.innerHTML = "Class";
     heroClassDiv.appendChild(heroClassLabel);
 
-    let groupTypeSelect = document.createElement("select");
-    heroClassDiv.appendChild(groupTypeSelect);
+    let classSelect = document.createElement("select");
+    heroClassDiv.appendChild(classSelect);
 
     let opt0 = document.createElement("option");
     opt0.value = "";
     opt0.disabled = true;
     opt0.selected = true;
     opt0.text = "select";
-    groupTypeSelect.appendChild(opt0);
+    classSelect.appendChild(opt0);
 
     heroClasses.forEach((type) => {
       let opt = document.createElement("option");
       opt.value = type;
       opt.text = type;
-      groupTypeSelect.appendChild(opt);
+      classSelect.appendChild(opt);
     });
 
     // LOCATION SELECT
+
+    let heroLocationsDiv = document.createElement("div");
+    heroLocationsDiv.className = "someDiv";
+    heroFormDiv.appendChild(heroLocationsDiv);
+
+    let heroLocationsLabel = document.createElement("label");
+    heroLocationsLabel.innerHTML = "Location";
+    heroLocationsDiv.appendChild(heroLocationsLabel);
+
+    let heroLocationsSelect = document.createElement("select");
+    heroLocationsDiv.appendChild(heroLocationsSelect);
+
+    opt0 = document.createElement("option");
+    opt0.value = "";
+    opt0.disabled = true;
+    opt0.selected = true;
+    opt0.text = "select";
+    heroLocationsSelect.appendChild(opt0);
+
+    this.locations.forEach((location, index) => {
+      let opt = document.createElement("option");
+      opt.value = index;
+      opt.text = location;
+      heroLocationsSelect.appendChild(opt);
+    });
+
+    // ORDER SELECT
 
     let heroOrderDiv = document.createElement("div");
     heroOrderDiv.className = "someDiv";
@@ -224,38 +340,85 @@ export class Kingdom {
     opt0.text = "select";
     heroOrderSelect.appendChild(opt0);
 
-    /* 
-      pored lokacije dodati dugme paintHero(locationDiv, location, groupSize)
-
-
-    */
-
-    this.locations.forEach((location, index) => {
+    let i;
+    for (i = 1; i <= 9; i++) {
       let opt = document.createElement("option");
-      opt.value = index;
-      opt.text = location;
+      opt.value = i;
+      opt.text = i;
       heroOrderSelect.appendChild(opt);
-    });
+    }
 
-    // DODAJ GRUPU DUGME
+    let buttonsDiv = document.createElement("div");
+    buttonsDiv.className = "someDiv";
+    heroFormDiv.appendChild(buttonsDiv);
+
+    // DODAJ HEROJA DUGME
     let addGroupButton = document.createElement("button");
-    addGroupButton.innerHTML = "Add group";
-    heroFormDiv.appendChild(addGroupButton);
+    addGroupButton.innerHTML = "Add";
+    buttonsDiv.appendChild(addGroupButton);
     addGroupButton.onclick = () => {
-      let groupName = this.container.querySelector(".groupName").value;
-      let groupSize = parseInt(
-        this.container.querySelector(".groupSize").value
-      );
+      let heroName = this.container.querySelector(".heroName").value;
+      let heroClass = classSelect.value;
+      let location = parseInt(heroLocationsSelect.value);
+      let heroOrder = heroOrderSelect.value;
 
-      let groupType = groupTypeSelect.value;
-      let location = parseInt(locationsSelect.value);
+      if (heroName === "") {
+        alert("Please insert hero name.");
+      } else if (heroClass === "") {
+        alert("Please select a class.");
+      } else if (heroLocationsSelect.value === "") {
+        alert("Please pick a location.");
+      } else if (Number.isNaN(heroOrder)) {
+        alert("Please pick hero order.");
+      } else if (heroOrder > this.groups[location].groupSize) {
+        alert("Selected group isn't that big.");
+      } else {
+        this.groups[location].changeHero(heroName, heroClass, heroOrder);
+      }
+    };
 
-      this.groups[location].ChangeGroup(
-        groupName,
-        groupSize,
-        groupType,
-        this.locations[location]
-      );
+    // IZMENI HEROJA DUGME
+    let updateGroupButton = document.createElement("button");
+    updateGroupButton.innerHTML = "Update";
+    buttonsDiv.appendChild(updateGroupButton);
+    updateGroupButton.onclick = () => {
+      let heroName = this.container.querySelector(".heroName").value;
+      let heroClass = classSelect.value;
+      let location = parseInt(heroLocationsSelect.value);
+      let heroOrder = heroOrderSelect.value;
+
+      if (heroName === "") {
+        alert("Please insert hero name.");
+      } else if (heroClass === "") {
+        alert("Please select a class.");
+      } else if (heroLocationsSelect.value === "") {
+        alert("Please pick a location.");
+      } else if (Number.isNaN(heroOrder)) {
+        alert("Please pick hero order.");
+      } else if (heroOrder > this.groups[location].groupSize) {
+        alert("Selected group isn't that big.");
+      } else {
+        this.groups[location].changeHero(heroName, heroClass, heroOrder);
+      }
+    };
+
+    // OBRISI HEROJA DUGME
+    let deleteGroupButton = document.createElement("button");
+    deleteGroupButton.innerHTML = "Delete";
+    buttonsDiv.appendChild(deleteGroupButton);
+    deleteGroupButton.onclick = () => {
+      let location = parseInt(heroLocationsSelect.value);
+      let heroOrder = heroOrderSelect.value;
+
+      if (heroLocationsSelect.value === "") {
+        alert("You need to select a location");
+      } else if (Number.isNaN(heroOrder)) {
+        alert("Please pick hero order.");
+      } else if (heroOrder > this.groups[location].groupSize) {
+        alert("Selected group isn't that big.");
+      } else {
+        this.groups[location].deleteHero(heroOrder);
+      }
     };
   }
 

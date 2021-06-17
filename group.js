@@ -29,8 +29,27 @@ export class Group {
     let newHero;
     for (i = 0; i < groupSize; i++) {
       newHero = new Hero("Name", i, "Class");
+      this.heroes.push(newHero);
       newHero.paintHero(heroesDiv, i);
     }
+  }
+
+  changeHero(heroName, heroClass, heroOrder) {
+    this.container.querySelector(
+      `.heroNameLabel${heroOrder - 1}`
+    ).innerHTML = `${heroName}`;
+
+    this.container.querySelector(
+      `.heroClassLabel${heroOrder - 1}`
+    ).innerHTML = `${heroClass}`;
+  }
+
+  deleteHero(heroOrder) {
+    let locationElement = this.container.querySelector(
+      `.heroDiv${heroOrder - 1}`
+    );
+
+    locationElement.parentElement.removeChild(locationElement);
   }
 
   paintGroup(host, location) {

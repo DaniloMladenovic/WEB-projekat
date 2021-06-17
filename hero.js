@@ -9,7 +9,7 @@ export class Hero {
 
   paintHero(host, order) {
     let heroDiv = document.createElement("div");
-    heroDiv.className = "heroDiv";
+    heroDiv.className = `heroDiv${order}`;
     host.appendChild(heroDiv);
     this.container = heroDiv;
 
