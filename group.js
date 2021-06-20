@@ -1,17 +1,20 @@
 import { Hero } from "./hero.js";
 
 export class Group {
-  constructor(name, size, type, location) {
+  constructor(name, size, type, location, kingdomName) {
     this.groupName = name;
     this.groupSize = size;
     this.groupType = type;
     this.location = location;
+    this.kingdomName = kingdomName;
+    this.id;
 
     this.container = null;
     this.heroes = [];
   }
 
-  ChangeGroup(groupName, groupSize, groupType, location) {
+  ChangeGroup(id, groupName, groupSize, groupType, location) {
+    this.id = id;
     this.groupName = groupName;
     this.groupSize = groupSize;
     this.groupType = groupType;
@@ -28,13 +31,20 @@ export class Group {
     let i;
     let newHero;
     for (i = 0; i < groupSize; i++) {
-      newHero = new Hero("Name", i, "Class");
+      newHero = new Hero(
+        "Name",
+        i,
+        "Class",
+        `${this.groupName}`,
+        `${location}`
+      );
       this.heroes.push(newHero);
       newHero.paintHero(heroesDiv, i);
     }
   }
 
-  changeHero(heroName, heroClass, heroOrder) {
+  changeHero(id, heroName, heroClass, heroOrder) {
+    this.heroes[heroOrder].id = id;
     this.container.querySelector(
       `.heroNameLabel${heroOrder - 1}`
     ).innerHTML = `${heroName}`;

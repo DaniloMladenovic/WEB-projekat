@@ -1,9 +1,11 @@
 import { Group } from "./group.js";
 
 export class Kingdom {
-  constructor(kingdomName, numberOfGroups) {
+  constructor(id, kingdomName, kingdomCapitol, king) {
+    this.id = id;
     this.kingdomName = kingdomName;
-    this.numberOfGroups = numberOfGroups;
+    this.kingdomCapitol = kingdomCapitol;
+    this.king = king;
 
     this.container = null;
     this.formContainer = null;
@@ -13,7 +15,7 @@ export class Kingdom {
       "North",
       "North-East",
       "West",
-      "Center",
+      "Capitol",
       "East",
       "South-West",
       "South",
@@ -36,6 +38,7 @@ export class Kingdom {
     this.formContainer.classList.add("formContainer");
     this.container.appendChild(this.formContainer);
 
+    // this.paintKingdomForm(this.formContainer);
     this.paintGroupForm(this.formContainer);
     this.paintHeroForm(this.formContainer);
     this.paintGroups(this.container);
@@ -159,12 +162,32 @@ export class Kingdom {
       } else if (locationsSelect.value === "") {
         alert("Please pick a location.");
       } else {
-        this.groups[location].ChangeGroup(
-          groupName,
-          groupSize,
-          groupType,
-          this.locations[location]
-        );
+        fetch("https://localhost:5001/Kingdom/AddGroup/" + this.id, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            groupName: `${groupName}`,
+            groupSize: `${groupSize}`,
+            groupType: `${groupType}`,
+            location: `${this.locations[location]}`,
+          }),
+        })
+          .then((p) => {
+            p.json().then((data) => {
+              this.groups[location].ChangeGroup(
+                data,
+                groupName,
+                groupSize,
+                groupType,
+                this.locations[location]
+              );
+            });
+          })
+          .catch((p) => {
+            alert("Greška prilikom upisa.");
+          });
       }
     };
 
@@ -180,6 +203,8 @@ export class Kingdom {
       let groupType = groupTypeSelect.value;
       let location = parseInt(locationsSelect.value);
 
+      console.log(`${this.groups[location].id}`);
+
       if (groupName === "") {
         alert("Please insert group name.");
       } else if (Number.isNaN(groupSize)) {
@@ -191,25 +216,46 @@ export class Kingdom {
       } else if (locationsSelect.value === "") {
         alert("Please pick a location.");
       } else {
-        let locationElement = this.container.querySelector(
-          `.${this.locations[location]}`
-        );
+        fetch("https://localhost:5001/Group/ChangeGroup", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: `${this.groups[location].id}`,
+            groupName: `${groupName}`,
+            groupSize: `${groupSize}`,
+            groupType: `${groupType}`,
+            location: `${this.locations[location]}`,
+          }),
+        })
+          .then((p) => {
+            if (p.ok) {
+              let locationElement = this.container.querySelector(
+                `.${this.locations[location]}`
+              );
 
-        let removeElement =
-          locationElement.parentElement.querySelector(".heroesDiv");
+              let removeElement =
+                locationElement.parentElement.querySelector(".heroesDiv");
 
-        if (removeElement != null) {
-          locationElement.parentElement.removeChild(
-            locationElement.parentElement.querySelector(".heroesDiv")
-          );
+              if (removeElement != null) {
+                locationElement.parentElement.removeChild(
+                  locationElement.parentElement.querySelector(".heroesDiv")
+                );
 
-          this.groups[location].ChangeGroup(
-            groupName,
-            groupSize,
-            groupType,
-            this.locations[location]
-          );
-        }
+                this.groups[location].ChangeGroup(
+                  this.groups[location].id,
+                  groupName,
+                  groupSize,
+                  groupType,
+                  this.locations[location]
+                );
+              }
+            }
+          })
+          .catch((p) => {
+            alert("Greška prilikom izmene.");
+          });
       }
     };
 
@@ -221,24 +267,41 @@ export class Kingdom {
       let location = parseInt(locationsSelect.value);
 
       if (locationsSelect.value === "") {
-        alert("dude pls be normal");
+        alert("Please select a location.");
       } else {
-        let locationElement = this.container.querySelector(
-          `.${this.locations[location]}`
-        );
+        fetch(
+          "https://localhost:5001/Group/DeleteGroup/" +
+            this.groups[location].id,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+          .then((p) => {
+            if (p.ok) {
+              let locationElement = this.container.querySelector(
+                `.${this.locations[location]}`
+              );
 
-        let removeElement =
-          locationElement.parentElement.querySelector(".heroesDiv");
+              let removeElement =
+                locationElement.parentElement.querySelector(".heroesDiv");
 
-        if (removeElement != null) {
-          this.container.querySelector(
-            `.${this.locations[location]}`
-          ).innerHTML = "Group name (Type)";
+              if (removeElement != null) {
+                this.container.querySelector(
+                  `.${this.locations[location]}`
+                ).innerHTML = "Group name (Type)";
 
-          locationElement.parentElement.removeChild(
-            locationElement.parentElement.querySelector(".heroesDiv")
-          );
-        }
+                locationElement.parentElement.removeChild(
+                  locationElement.parentElement.querySelector(".heroesDiv")
+                );
+              }
+            }
+          })
+          .catch((p) => {
+            alert("Greška prilikom brisanja.");
+          });
       }
     };
   }
@@ -373,7 +436,33 @@ export class Kingdom {
       } else if (heroOrder > this.groups[location].groupSize) {
         alert("Selected group isn't that big.");
       } else {
-        this.groups[location].changeHero(heroName, heroClass, heroOrder);
+        fetch(
+          "https://localhost:5001/Group/AddHero/" + this.groups[location].id,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              heroName: `${heroName}`,
+              heroClass: `${heroClass}`,
+              heroOrder: heroOrder,
+            }),
+          }
+        )
+          .then((p) => {
+            p.json().then((data) => {
+              this.groups[location].changeHero(
+                data,
+                heroName,
+                heroClass,
+                heroOrder
+              );
+            });
+          })
+          .catch((p) => {
+            alert("Greška prilikom upisa.");
+          });
       }
     };
 
@@ -398,7 +487,31 @@ export class Kingdom {
       } else if (heroOrder > this.groups[location].groupSize) {
         alert("Selected group isn't that big.");
       } else {
-        this.groups[location].changeHero(heroName, heroClass, heroOrder);
+        fetch("https://localhost:5001/Hero/ChangeHero", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: `${this.groups[location].heroes[heroOrder].id}`,
+            heroName: `${heroName}`,
+            heroClass: `${heroClass}`,
+            heroOrder: heroOrder,
+          }),
+        })
+          .then((p) => {
+            if (p.ok) {
+              this.groups[location].changeHero(
+                this.groups[location].heroes[heroOrder].id,
+                heroName,
+                heroClass,
+                heroOrder
+              );
+            }
+          })
+          .catch((p) => {
+            alert("Greška prilikom izmene.");
+          });
       }
     };
 
@@ -417,7 +530,24 @@ export class Kingdom {
       } else if (heroOrder > this.groups[location].groupSize) {
         alert("Selected group isn't that big.");
       } else {
-        this.groups[location].deleteHero(heroOrder);
+        fetch(
+          "https://localhost:5001/Hero/DeleteHero/" +
+            this.groups[location].heroes[heroOrder].id,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+          .then((p) => {
+            if (p.ok) {
+              this.groups[location].deleteHero(heroOrder);
+            }
+          })
+          .catch((p) => {
+            alert("Greška prilikom brisanja.");
+          });
       }
     };
   }
@@ -434,9 +564,94 @@ export class Kingdom {
       newGroupDiv.className = "newGroupDiv";
       groupsDiv.appendChild(newGroupDiv);
 
-      newGroup = new Group("Group name", 0, "Type", location);
+      if (location === "Capitol") {
+        newGroup = new Group(
+          `${this.kingdomCapitol}`,
+          1,
+          "Type",
+          location,
+          `${this.kingdomName}`
+        );
+      } else {
+        newGroup = new Group(
+          "Group name",
+          0,
+          "Type",
+          location,
+          `${this.kingdomName}`
+        );
+      }
       this.addGroup(newGroup);
       newGroup.paintGroup(newGroupDiv, location);
     });
+  }
+
+  paintKingdomForm(host) {
+    // const kingdomFormDiv = document.createElement("div");
+    // kingdomFormDiv.className = "kingdomFormDiv";
+    // host.appendChild(kingdomFormDiv);
+    // let kingdomFormLabel = document.createElement("h3");
+    // kingdomFormLabel.innerHTML = "Kingdom creation";
+    // kingdomFormDiv.appendChild(kingdomFormLabel);
+    // // Kingdom NAME //
+    // let kingdomNameDiv = document.createElement("div");
+    // kingdomNameDiv.className = "someDiv";
+    // kingdomFormDiv.appendChild(kingdomNameDiv);
+    // let groupNameLabel = document.createElement("label");
+    // groupNameLabel.innerHTML = "Kingdom name";
+    // kingdomNameDiv.appendChild(groupNameLabel);
+    // let groupNameInput = document.createElement("input");
+    // groupNameInput.className = "kingdomName";
+    // kingdomNameDiv.appendChild(groupNameInput);
+    // // Kingdom CAPITOL //
+    // let capitolNameDiv = document.createElement("div");
+    // capitolNameDiv.className = "someDiv";
+    // kingdomFormDiv.appendChild(capitolNameDiv);
+    // let capitolNameLabel = document.createElement("label");
+    // capitolNameLabel.innerHTML = "Capitol name";
+    // capitolNameDiv.appendChild(capitolNameLabel);
+    // let capitolNameInput = document.createElement("input");
+    // capitolNameInput.className = "capitolName";
+    // capitolNameDiv.appendChild(capitolNameInput);
+    // // King NAME //
+    // let kingNameDiv = document.createElement("div");
+    // kingNameDiv.className = "someDiv";
+    // kingdomFormDiv.appendChild(kingNameDiv);
+    // let kingNameLabel = document.createElement("label");
+    // kingNameLabel.innerHTML = "King";
+    // kingNameDiv.appendChild(kingNameLabel);
+    // let kingNameInput = document.createElement("input");
+    // kingNameInput.className = "kingName";
+    // kingNameDiv.appendChild(kingNameInput);
+    // // DUGME
+    // let addKingdomButton = document.createElement("button");
+    // addKingdomButton.innerHTML = "Add";
+    // kingdomFormDiv.appendChild(addKingdomButton);
+    // addKingdomButton.onclick = () => {
+    //   let kingdomName = this.container.querySelector(".kingdomName").value;
+    //   let capitolName = this.container.querySelector(".capitolName").value;
+    //   let kingName = this.container.querySelector(".kingName").value;
+    //   if (kingdomName === "") {
+    //     alert("Please insert kingdom name.");
+    //   } else if (capitolName === "") {
+    //     alert("Please insert capitol name.");
+    //   } else if (kingName === "") {
+    //     alert("Please insert king's name.");
+    //   } else {
+    //     fetch("https://localhost:5001/Kingdom/MakeKingdom", {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({
+    //         kingdomName: `${kingdomName}`,
+    //         kingdomCapitol: `${capitolName}`,
+    //         king: `${kingName}`,
+    //       }),
+    //     }).catch((p) => {
+    //       alert("Greška prilikom upisa.");
+    //     });
+    //   }
+    // };
   }
 }

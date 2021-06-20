@@ -20,6 +20,7 @@
   margin: 0.5em;
 }
 
+.kingdomFormDiv input,
 .groupFormDiv input,
 .heroFormDiv input {
   width: 6.5rem;

@@ -1,8 +1,11 @@
 export class Hero {
-  constructor(heroName, order, heroClass) {
+  constructor(heroName, order, heroClass, groupName, location) {
+    this.id = null;
     this.heroName = heroName;
     this.order = order;
     this.heroClass = heroClass;
+    this.groupName = groupName;
+    this.location = location;
 
     this.container = null;
   }
